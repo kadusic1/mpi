@@ -1,6 +1,12 @@
 # Plan: najduži period rasta (pristup C)
 
-Pregled svih razmotrenih pristupa: [approaches.html](https://claude.ai/artifact/DVmv4p5uZUjERPPoooXyyC)
+Pregled svih razmotrenih pristupa: [interaktivni pregled (A, B, C, D)](https://claude.ai/artifact/DVmv4p5uZUjERPPoooXyyC)
+
+## Zašto pristup C
+
+Svaki proces sam računa svoja mjerenja, jer je `mjerenje(i, n, seed)` čista funkcija. Zato se niz od ~50M vrijednosti nigdje ne šalje. To nije slučaj kod pristupa A (root generiše sve, pa `Scatter`), a u B i D proces šalje sažetak bloka koji se zatim spaja kroz više slučajeva.
+U C period pripada bloku u kojem počinje, pa proces samo pročita koliko treba iza `hi`. Spajanje su tada dva standardna poziva (`Allreduce(MAX)` i `Reduce(MIN)`) sa po 2 broja po procesu.
+Serijsko rješenje je isti algoritam nad jednim blokom (`{0, n}`), pa je kod najkraći i DRY.
 
 ## Cilj
 
@@ -108,7 +114,7 @@ Podaci se ne šalju. Šalju se samo 2 broja po procesu.
 
 - [ ] `make test`: svi redovi daju `duzina = 7, pocetak = 9`
 - [ ] `make compare`: na pravim podacima `serial` i `parallel` daju isto za p = 1…8
-- [ ] rubni slučajevi (approaches.html → „Primjer korak po korak“): jednake vrijednosti, nerijeseno, rekord na kraju niza, niz koji samo opada, jedan element, period preko više blokova, p > n
+- [ ] rubni slučajevi ([pregled pristupa](https://claude.ai/artifact/DVmv4p5uZUjERPPoooXyyC) → „Primjer korak po korak“): jednake vrijednosti, nerijeseno, rekord na kraju niza, niz koji samo opada, jedan element, period preko više blokova, p > n
 - [ ] `make bench`: zapisati vremena i ubrzanje
 
 ## Redoslijed rada

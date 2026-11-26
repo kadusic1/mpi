@@ -1,0 +1,747 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Odabir opcije za rješavanje zadatka</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: jedna kolona, instrument-panel simulator na vrhu, zatim kartice rješenja i tabela poređenja */
+:root {
+  --bg: #f3f5f6;
+  --panel: #ffffff;
+  --ink: #15212b;
+  --muted: #5b6873;
+  --line: #d9dfe3;
+  --heat: #d2451b;
+  --heat-soft: #fbe3d9;
+  --cool: #1f6fb2;
+  --ok: #2f8a4c;
+  --code-bg: #f7f8f9;
+  --c-com: #6c7a86; --c-kw: #8a3ab9; --c-str: #2f8a4c; --c-num: #c0392b; --c-mpi: #1f6fb2; --c-pp: #a05a00;
+  --r0: #4c7fb8; --r1: #4f9a6e; --r2: #b9853a; --r3: #8a64b5; --r4: #3f9aa5; --r5: #b45f86; --r6: #7c8c3a; --r7: #6b7480;
+  --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f161c; --panel: #172129; --ink: #e5ebef; --muted: #93a1ac; --line: #2a3742;
+    --heat: #ff7a4d; --heat-soft: #3b2219; --cool: #6fb3ec; --ok: #6cc98a; --code-bg: #121b22;
+    --c-com: #7d8b96; --c-kw: #c99bf0; --c-str: #8fd6a2; --c-num: #ff9a85; --c-mpi: #7cc0f5; --c-pp: #e8b467;
+    --r0: #6f9fd6; --r1: #6fbf8d; --r2: #d6a65a; --r3: #a888d4; --r4: #5fbcc6; --r5: #d483a8; --r6: #a5b55a; --r7: #94a0ab;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f161c; --panel: #172129; --ink: #e5ebef; --muted: #93a1ac; --line: #2a3742;
+  --heat: #ff7a4d; --heat-soft: #3b2219; --cool: #6fb3ec; --ok: #6cc98a; --code-bg: #121b22;
+  --c-com: #7d8b96; --c-kw: #c99bf0; --c-str: #8fd6a2; --c-num: #ff9a85; --c-mpi: #7cc0f5; --c-pp: #e8b467;
+  --r0: #6f9fd6; --r1: #6fbf8d; --r2: #d6a65a; --r3: #a888d4; --r4: #5fbcc6; --r5: #d483a8; --r6: #a5b55a; --r7: #94a0ab;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 40px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 800; line-height: 1.05; }
+h2 { font-size: 24px; font-weight: 700; }
+h3 { font-size: 18px; font-weight: 700; }
+p { margin: 0; }
+code, .mono { font-family: var(--f-mono); font-size: 0.92em; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.lead { max-width: 66ch; color: var(--muted); font-size: 16px; }
+header { display: flex; flex-direction: column; gap: 14px; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 22px; font-family: var(--f-mono); font-size: 13px; color: var(--muted); }
+.facts b { color: var(--ink); font-weight: 500; }
+section { display: flex; flex-direction: column; gap: 16px; }
+.sec-head { display: flex; flex-direction: column; gap: 6px; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+/* controls */
+.controls { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 720px) { .controls { grid-template-columns: minmax(0, 1fr); } }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+label, .lbl { font-size: 12px; font-family: var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+textarea { font-family: var(--f-mono); font-size: 13px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--code-bg); color: var(--ink); resize: vertical; min-height: 58px; width: 100%; }
+textarea:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--cool); outline-offset: 2px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+button { font: inherit; cursor: pointer; }
+.chip-btn { font-family: var(--f-mono); font-size: 12px; padding: 5px 10px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 999px; }
+.chip-btn:hover { border-color: var(--muted); }
+.pslider { display: flex; align-items: center; gap: 12px; }
+.pslider input { flex: 1; accent-color: var(--heat); }
+.pval { font-family: var(--f-display); font-weight: 800; font-size: 28px; min-width: 2ch; text-align: right; font-variant-numeric: tabular-nums; }
+.seg { display: flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { flex: 1 1 auto; padding: 8px 12px; border: 0; border-right: 1px solid var(--line); background: var(--panel); color: var(--muted); font-size: 13px; font-weight: 500; }
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.err { color: var(--heat); font-size: 13px; }
+
+.result { display: flex; flex-wrap: wrap; gap: 10px 26px; align-items: baseline; padding: 12px 14px; border-radius: 8px; background: var(--heat-soft); }
+.result .big { font-family: var(--f-display); font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.result .ok { color: var(--ok); font-weight: 600; font-family: var(--f-mono); font-size: 13px; }
+.result .bad { color: var(--heat); font-weight: 600; font-family: var(--f-mono); font-size: 13px; }
+.result .sub { color: var(--muted); font-size: 13px; }
+.scroll { overflow-x: auto; min-width: 0; }
+svg text { font-family: var(--f-mono); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 500; }
+td { font-variant-numeric: tabular-nums; }
+td.num, th.num { text-align: right; }
+.rk { display: inline-flex; align-items: center; gap: 6px; font-family: var(--f-mono); font-weight: 500; }
+.steps { display: flex; flex-direction: column; gap: 4px; font-family: var(--f-mono); font-size: 12.5px; color: var(--muted); }
+.steps b { color: var(--ink); font-weight: 500; }
+.steps .hl { color: var(--heat); }
+.note { font-size: 13px; color: var(--muted); max-width: 80ch; }
+
+/* solution tabs */
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.tab { padding: 9px 14px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px; font-size: 14px; font-weight: 600; display: inline-flex; gap: 8px; align-items: center; }
+.tab .tag { font-family: var(--f-mono); font-size: 11px; color: var(--muted); font-weight: 400; }
+.tab[aria-selected="true"] { border-color: var(--ink); box-shadow: inset 0 -3px 0 var(--heat); }
+.badge { font-family: var(--f-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 7px; border-radius: 999px; background: var(--heat); color: var(--panel); }
+.sol-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 20px; }
+@media (max-width: 860px) { .sol-grid { grid-template-columns: minmax(0, 1fr); } }
+.sol-text { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.sol-text ol, .sol-text ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+.pc { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 520px) { .pc { grid-template-columns: 1fr; } }
+.pc h4 { margin: 0 0 4px; font-size: 12px; font-family: var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; }
+.pc .plus h4 { color: var(--ok); } .pc .minus h4 { color: var(--heat); }
+.pc ul { font-size: 13.5px; }
+.uses { display: flex; flex-wrap: wrap; gap: 6px; }
+.uses code { padding: 2px 8px; border-radius: 4px; background: var(--code-bg); border: 1px solid var(--line); font-size: 12px; }
+.codebox { border: 1px solid var(--line); border-radius: 8px; background: var(--code-bg); display: flex; flex-direction: column; min-width: 0; }
+.codebar { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid var(--line); gap: 10px; }
+.codebar span { font-family: var(--f-mono); font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.copy { font-family: var(--f-mono); font-size: 12px; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); }
+pre { margin: 0; padding: 12px 14px; overflow: auto; max-height: 560px; font-family: var(--f-mono); font-size: 12.5px; line-height: 1.5; tab-size: 4; }
+.t-com { color: var(--c-com); font-style: italic; } .t-kw { color: var(--c-kw); } .t-str { color: var(--c-str); }
+.t-num { color: var(--c-num); } .t-mpi { color: var(--c-mpi); font-weight: 500; } .t-pp { color: var(--c-pp); }
+
+.bar-cell { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+.bar-cell i { display: block; height: 6px; border-radius: 3px; background: var(--cool); opacity: 0.7; }
+tr.best td { background: var(--heat-soft); }
+
+.insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.insight { display: flex; flex-direction: column; gap: 6px; padding: 16px; border-top: 3px solid var(--line); background: var(--panel); border-radius: 0 0 8px 8px; }
+.insight.key { border-top-color: var(--heat); }
+.insight p { font-size: 14px; color: var(--muted); }
+.insight p b { color: var(--ink); font-weight: 600; }
+.run { font-family: var(--f-mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; overflow-x: auto; white-space: pre; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<style>
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.card.rec { border-color: var(--heat); }
+.card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.card-head .id { font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+.card p { font-size: 14px; }
+.card ol, .card ul { margin: 0; padding-left: 20px; font-size: 13.5px; display: flex; flex-direction: column; gap: 3px; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.meta code { padding: 2px 8px; border-radius: 4px; background: var(--code-bg); border: 1px solid var(--line); font-size: 11.5px; }
+.tree { font-family: var(--f-mono); font-size: 12.5px; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; white-space: pre; overflow-x: auto; line-height: 1.5; }
+.verdict { font-size: 13px; padding: 8px 10px; border-radius: 6px; background: var(--code-bg); }
+.card.rec .verdict { background: var(--heat-soft); }
+.trace-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 18px; }
+@media (max-width: 860px) { .trace-grid { grid-template-columns: minmax(0, 1fr); } }
+.ex-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ex-chips .chip-btn[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.seq { display: flex; flex-wrap: wrap; gap: 4px; }
+.seq span { font-family: var(--f-mono); font-size: 13px; min-width: 38px; text-align: center; padding: 6px 4px 4px; border-radius: 4px; background: var(--code-bg); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 1px; }
+.seq span small { font-size: 10px; color: var(--muted); }
+.seq span.in-best { background: var(--heat); border-color: var(--heat); color: var(--panel); }
+.seq span.in-best small { color: var(--panel); }
+#trace tr.rec td { background: var(--heat-soft); }
+#trace tr.brk td:first-child { box-shadow: inset 3px 0 0 var(--cool); }
+.ev { white-space: normal; min-width: 220px; font-size: 12.5px; }
+.ev b { font-weight: 600; }
+.tag-rec { color: var(--heat); font-weight: 600; }
+.tag-brk { color: var(--cool); font-weight: 600; }
+.edge-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; }
+.sum-blocks { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start; }
+.sum-blk { display: flex; flex-direction: column; gap: 6px; }
+.seq span.pf { box-shadow: inset 0 -4px 0 var(--cool); }
+.seq span.sf { box-shadow: inset 0 4px 0 var(--heat); }
+.seq span.pf.sf { box-shadow: inset 0 -4px 0 var(--cool), inset 0 4px 0 var(--heat); }
+.seq span.bs { font-weight: 600; border-color: var(--ink); }
+.mark-pf { color: var(--cool); font-weight: 600; }
+.mark-sf { color: var(--heat); font-weight: 600; }
+.lvl { display: inline-flex; gap: 3px; vertical-align: middle; }
+.lvl i { width: 8px; height: 8px; border-radius: 2px; background: var(--line); display: block; }
+.lvl i.on { background: var(--cool); }
+.lvl.bad i.on { background: var(--heat); }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">PRS · MPI · Zadaća 1</div>
+    <h1>Najduži period rasta temperature</h1>
+    <p class="lead">Pregled mogućih pristupa, bez gotovog koda. Za svaku paralelnu ideju: kako radi, koje MPI pozive iz primjera koristi, prednosti i mane. Na kraju je pregled kako organizovati serijsku i paralelnu verziju u fajlove.</p>
+    <div class="facts">
+      <span>n ≈ <b>50 miliona</b></span>
+      <span>test niz → <b>dužina 7, početak 9</b> za 1–8 procesa</span>
+      <span>kod jednakih dužina → <b>najmanji početak</b></span>
+    </div>
+  </header>
+
+  <section id="primjer">
+    <div class="sec-head">
+      <h2>Primjer korak po korak</h2>
+      <p class="note">Serijski prolaz na malom nizu: u svakom koraku vidite poređenje sa prethodnim mjerenjem, kada period <span class="tag-brk">staje</span> i kada se novi najduži period <span class="tag-rec">bilježi</span>. Izaberite i rubne slučajeve.</p>
+    </div>
+    <div class="panel">
+      <div class="ex-chips" id="exChips"></div>
+      <div class="seq" id="exSeq"></div>
+      <div class="trace-grid">
+        <div class="scroll"><table id="trace"></table></div>
+        <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+          <div class="result" id="exResult"></div>
+          <div class="verdict" id="exNote"></div>
+          <div>
+            <h3 style="margin-bottom:8px">Pravila</h3>
+            <ul class="edge-list">
+              <li><span class="tag-brk">Staje</span> kad je mjerenje <b>manje ili jednako</b> prethodnom. Novi period počinje na tom indeksu.</li>
+              <li>Period se završava i kad niz dođe do kraja. Zadnji period nema mjerenje koje ga „prekida“.</li>
+              <li><span class="tag-rec">Bilježi</span> se samo kad je trenutni period <b>strogo duži</b> od najboljeg.</li>
+              <li>Najbolji se provjerava u svakom koraku, a ne samo kad period stane.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 style="margin-bottom:8px">Rubni slučajevi</h3>
+        <ul class="edge-list">
+          <li><b>Jednake vrijednosti</b> (215, 215) nisu rast. Uslov <code>&gt;=</code> umjesto <code>&gt;</code> daje predug period.</li>
+          <li><b>Dva jednako duga perioda:</b> ostaje prvi. Uslov <code>len &gt;= best</code> bi pogrešno uzeo kasniji početak.</li>
+          <li><b>Najduži period na kraju niza:</b> ako najbolji ažurirate samo kad period stane, ovaj se nikad ne zabilježi.</li>
+          <li><b>Niz koji samo opada</b> i <b>jedan element:</b> rezultat je dužina 1, početak 0. Najbolji zato počinje od 1, a ne od 0.</li>
+          <li><b>Negativne temperature</b> (-10 = -1,0 °C) normalno učestvuju u rastu. Nemojte koristiti -1 ili 0 kao „nema vrijednosti“.</li>
+          <li><b>U paralelnoj verziji</b> se dodaje još jedan: period koji prelazi granicu između blokova (vidi simulator ispod).</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="serijski">
+    <div class="sec-head">
+      <h2>Serijski pristup</h2>
+      <p class="note">Osnova za sve ostalo i referenca za provjeru tačnosti.</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <h3>Jedan prolaz kroz niz</h3>
+        <ol>
+          <li>Pamtite prethodnu vrijednost, dužinu i početak trenutnog perioda, te najbolji do sada.</li>
+          <li>Ako je trenutna vrijednost <b>strogo veća</b> od prethodne, period se nastavlja. Inače novi period počinje na tom indeksu.</li>
+          <li>Najbolji mijenjate samo kad je trenutni <b>strogo duži</b>. Tako kod jednakih ostaje raniji početak.</li>
+        </ol>
+        <div class="meta"><code>O(n) vrijeme</code><code>O(1) memorija</code></div>
+      </div>
+      <div class="card">
+        <h3>Na šta paziti</h3>
+        <ul>
+          <li>Mjerenja ne morate čuvati u nizu. Dovoljno je pozivati <code>mjerenje(i, n, seed)</code> u petlji.</li>
+          <li>Generisanje mjerenja je skuplje od samog poređenja, pa je to dio koji treba paralelizovati.</li>
+          <li><code>n</code> je veći od 50 miliona, pa indekse držite u <code>long long</code>.</li>
+          <li>Jedno mjerenje je period dužine 1. Početna vrijednost najboljeg je dakle 1, a ne 0.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="sim">
+    <div class="sec-head">
+      <h2>Kako se posao dijeli</h2>
+      <p class="note">Glavni problem paralelne verzije je period koji počinje u jednom bloku a završava u drugom. Izaberite niz, broj procesa i pristup, pa pogledajte šta svaki proces vidi i kako se dijelovi spajaju.</p>
+    </div>
+    <div class="panel">
+      <div class="controls">
+        <div class="field">
+          <label for="arr">Mjerenja (desetinke °C)</label>
+          <textarea id="arr" spellcheck="false"></textarea>
+          <div class="row">
+            <button class="chip-btn" data-preset="test">Test niz (23)</button>
+            <button class="chip-btn" data-preset="primjer">Primjer iz zadatka</button>
+            <button class="chip-btn" data-preset="granica">Period preko 3 bloka</button>
+            <button class="chip-btn" data-preset="nerijeseno">Dva jednaka perioda</button>
+            <button class="chip-btn" data-preset="random">Slučajni niz</button>
+          </div>
+          <div class="err" id="err" hidden></div>
+        </div>
+        <div class="field">
+          <label for="p">Broj procesa</label>
+          <div class="pslider"><input type="range" id="p" min="1" max="8" value="4"><span class="pval" id="pval">4</span></div>
+          <span class="lbl">Pristup</span>
+          <div class="seg" id="strat" role="group" aria-label="Pristup">
+            <button data-s="A" aria-pressed="false">A</button>
+            <button data-s="B" aria-pressed="false">B</button>
+            <button data-s="C" aria-pressed="true">C</button>
+            <button data-s="D" aria-pressed="false">D</button>
+          </div>
+          <span class="note" id="stratName"></span>
+        </div>
+      </div>
+      <div class="result" id="result"></div>
+      <div class="scroll"><svg id="viz" role="img" aria-label="Mjerenja po procesima"></svg></div>
+      <div class="legend" id="legend"></div>
+      <div class="scroll"><table id="rankTable"></table></div>
+      <div class="steps" id="steps"></div>
+    </div>
+  </section>
+
+  <section id="paralelno">
+    <div class="sec-head">
+      <h2>Paralelni pristupi</h2>
+      <p class="note">Četiri ideje, od one koja direktno prati primjere sa vježbi do one sa najmanje komunikacije. Sve se mogu napraviti tačno, a razlikuju se po tome gdje nastaje posao i koliko se šalje.</p>
+      <div class="panel" style="gap:8px"><span class="lbl">Koriste se samo funkcije iz examples/</span>
+        <div class="meta"><code>MPI_Init / MPI_Finalize</code><code>MPI_Comm_rank / MPI_Comm_size</code><code>MPI_Send / MPI_Recv</code><code>MPI_Bcast</code><code>MPI_Scatter</code><code>MPI_Gather</code><code>MPI_Allgather</code><code>MPI_Reduce</code><code>MPI_Allreduce</code><code>MPI_Wtime</code></div>
+        <p class="note">Nema <code>MPI_Scatterv</code>, <code>MPI_MAXLOC</code>, vlastitih operacija ni tipova. Operacije redukcije su ugrađene (<code>MPI_SUM</code>, <code>MPI_MAX</code>, <code>MPI_MIN</code>). Vrijeme se mjeri sa <code>MPI_Wtime</code>: zapamtite vrijeme prije i poslije računanja, a razliku ispiše rank 0.</p></div>
+    </div>
+    <div class="scroll"><table id="cmp"></table></div>
+    <div class="panel" id="sazetak">
+      <h3>Šta je sažetak bloka?</h3>
+      <p class="note">Pristupi A, B i D ne šalju podatke rootu nego <b>sažetak</b>: nekoliko brojeva koji o bloku kažu sve što treba za spajanje sa susjedima. Blok može imati milione mjerenja, a sažetak uvijek ima isti broj polja.</p>
+      <div class="scroll"><table>
+        <thead><tr><th>Polje</th><th>Značenje</th><th>Zašto treba</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">početak, dužina bloka</td><td>gdje blok počinje u cijelom nizu i koliko je dug</td><td>da se lokalni indeksi pretvore u globalne</td></tr>
+          <tr><td class="mono">prva, zadnja</td><td>prvo i zadnje mjerenje bloka</td><td>provjera da li se period nastavlja preko granice: <code>zadnja(lijevi) &lt; prva(desni)</code></td></tr>
+          <tr><td class="mono"><span class="mark-pf">prefiks</span></td><td>dužina rastućeg niza na <b>početku</b> bloka</td><td>nastavak perioda koji je došao s lijeve strane</td></tr>
+          <tr><td class="mono"><span class="mark-sf">sufiks</span></td><td>dužina rastućeg niza na <b>kraju</b> bloka</td><td>početak perioda koji može nastaviti u desni blok</td></tr>
+          <tr><td class="mono">najbolji (dužina, početak)</td><td>najduži period potpuno unutar bloka</td><td>kandidat koji ne zavisi od susjeda</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Primjer: 5, 3, 4, 8, 9, 2, 7 sa 2 procesa</h3>
+      <div class="sum-blocks">
+        <div class="sum-blk"><span class="lbl">P0 · indeksi 0–2</span>
+          <div class="seq"><span class="pf">5<small>0</small></span><span class="sf bs">3<small>1</small></span><span class="sf bs">4<small>2</small></span></div></div>
+        <div class="sum-blk"><span class="lbl">P1 · indeksi 3–6</span>
+          <div class="seq"><span class="pf bs">8<small>3</small></span><span class="pf bs">9<small>4</small></span><span class="sf">2<small>5</small></span><span class="sf">7<small>6</small></span></div></div>
+      </div>
+      <div class="legend"><span><i class="sw" style="background:var(--cool)"></i>prefiks (crta dolje)</span><span><i class="sw" style="background:var(--heat)"></i>sufiks (crta gore)</span><span><i class="sw" style="border:1px solid var(--ink)"></i>najbolji unutar bloka</span></div>
+      <div class="scroll"><table>
+        <thead><tr><th>Proces</th><th class="num">početak</th><th class="num">dužina</th><th class="num">prva</th><th class="num">zadnja</th><th class="num">prefiks</th><th class="num">sufiks</th><th class="num">najbolji</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">P0</td><td class="num">0</td><td class="num">3</td><td class="num">5</td><td class="num">4</td><td class="num">1 <span class="note">(5)</span></td><td class="num">2 <span class="note">(3, 4)</span></td><td class="num">2 od 1</td></tr>
+          <tr><td class="mono">P1</td><td class="num">3</td><td class="num">4</td><td class="num">8</td><td class="num">7</td><td class="num">2 <span class="note">(8, 9)</span></td><td class="num">2 <span class="note">(2, 7)</span></td><td class="num">2 od 3</td></tr>
+        </tbody>
+      </table></div>
+      <div class="steps">
+        <div><b>1. Most?</b>  zadnja(P0) = 4 &lt; prva(P1) = 8 → da, period prelazi granicu.</div>
+        <div><b>2. Period preko granice</b>  sufiks(P0) + prefiks(P1) = 2 + 2 = 4, počinje na 3 − 2 = 1.</div>
+        <div><b>3. Kandidati</b>  P0: 2 od 1 · most: 4 od 1 · P1: 2 od 3 → <span class="hl">dužina 4, početak 1</span>, isto kao serijski.</div>
+      </div>
+      <p class="note"><b>Poseban slučaj:</b> ako cijeli blok raste, prefiks = sufiks = dužina bloka. Tada period može proći kroz više blokova, pa spojeni sažetak mora produžiti i svoj prefiks i sufiks (npr. test niz sa 8 procesa, ili „Period preko 3 bloka“ u simulatoru). Prazan blok se pri spajanju samo preskoči.</p>
+    </div>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <section id="organizacija">
+    <div class="sec-head">
+      <h2>Serijsko i paralelno: jedan ili više fajlova</h2>
+      <p class="note">Zadatak traži oba rješenja i test način rada (<code>mpiexec -n 4 Ispit.exe test</code>). Black-box funkcije se kopiraju bez izmjena, pa je pitanje i gdje one žive.</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-head"><h3>1 · Jedan fajl, oba načina</h3><span class="id">Ispit.cpp</span></div>
+        <div class="tree">Ispit.cpp
+  ├─ black box + TEST
+  ├─ serijski(...)      → samo rank 0
+  ├─ paralelni(...)     → svi procesi
+  └─ main: argument "test", ispis oba
+     rezultata, vremena i ubrzanja</div>
+        <ul>
+          <li><b>+</b> Jedan exe kakav zadatak i pominje, jedno pokretanje uporedi oba rezultata i ispiše ubrzanje.</li>
+          <li><b>+</b> Black box postoji samo na jednom mjestu.</li>
+          <li><b>−</b> Serijsko vrijeme se mjeri unutar MPI programa, dok ostali procesi čekaju.</li>
+          <li><b>−</b> Fajl brzo postane dugačak ako imate više paralelnih varijanti.</li>
+        </ul>
+        <div class="verdict">Dobro za predaju i odbranu kad imate jednu paralelnu varijantu.</div>
+      </div>
+      <div class="card rec">
+        <div class="card-head"><h3>2 · Zajednički header + dva programa</h3><span class="badge">preporuka</span></div>
+        <div class="tree">z1/
+  ├─ podaci.h        black box, TEST, SEED,
+  │                  get(i) koji bira test/pravi
+  ├─ serijski.cpp    čisti C++, bez MPI
+  └─ Ispit.cpp       MPI verzija, argument test</div>
+        <ul>
+          <li><b>+</b> Serijska verzija je pravi program bez MPI, pa je njeno vrijeme poštena osnova za ubrzanje.</li>
+          <li><b>+</b> Black box i test niz su na jednom mjestu, a oba programa ih koriste isto.</li>
+          <li><b>+</b> Svaki fajl je kratak i čita se lako.</li>
+          <li><b>−</b> Dva izvršna fajla, pa i poređenje rezultata pokrećete dva puta.</li>
+        </ul>
+        <div class="verdict">Najbolji balans između čistoće i jednostavnosti.</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>3 · Fajl po varijanti</h3><span class="id">za poređenje pristupa</span></div>
+        <div class="tree">z1/
+  ├─ podaci.h
+  ├─ sazetak.h       sažetak bloka + spajanje
+  ├─ serijski.cpp
+  ├─ par_scatter.cpp   (A)
+  ├─ par_gather.cpp    (B)
+  ├─ par_vlasnik.cpp   (C)
+  ├─ par_lanac.cpp     (D)
+  └─ Makefile / run.sh  test za p = 1…8</div>
+        <ul>
+          <li><b>+</b> Odgovara na „razmislite da li se može bolje“: imate mjerenja za više pristupa.</li>
+          <li><b>+</b> Skripta lako pokrene sve varijante za p = 1…8 u test načinu.</li>
+          <li><b>−</b> Više fajlova za održavanje i build.</li>
+          <li><b>−</b> Treba jasno označiti koji je fajl „pravo“ rješenje (Ispit).</li>
+        </ul>
+        <div class="verdict">Korisno dok istražujete; za predaju izaberite jedan finalni program.</div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Šta svaki program treba imati, bez obzira na organizaciju</h3>
+      <ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:14px">
+        <li>Funkciju <code>get(i)</code> koja vraća <code>TEST[i]</code> u test načinu, a inače <code>mjerenje(i, n, seed)</code>. Ostatak koda ne zna odakle dolaze podaci.</li>
+        <li><code>n = 23</code> u test načinu, inače <code>broj_mjerenja(seed)</code>.</li>
+        <li>Ispis samo na ranku 0: dužina, početak i vrijeme (<code>MPI_Wtime</code>; u serijskom programu bez MPI-ja <code>std::chrono</code>).</li>
+        <li>Provjeru za svaki broj procesa: <code>for p in 1 2 3 4 5 6 7 8; do mpiexec --oversubscribe -n $p ./Ispit test; done</code></li>
+        <li>Na pravim podacima uporedite paralelni rezultat sa serijskim za isti seed.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="bolje">
+    <div class="sec-head">
+      <h2>Može li bolje?</h2>
+      <p class="note">Pitanja koja vode od prvog rješenja do boljeg.</p>
+    </div>
+    <div class="insights">
+      <div class="insight key"><h3>Da li root mora slati podatke?</h3><p><code>mjerenje(i)</code> zavisi samo od <code>i</code>. Ako root generiše sve, paralelizovali ste samo jeftini dio.</p></div>
+      <div class="insight key"><h3>Da li treba niz u memoriji?</h3><p>Za jedan prolaz dovoljna je prethodna vrijednost. Niz od 50 M int-ova je 200 MB.</p></div>
+      <div class="insight key"><h3>Kako dobiti par (dužina, početak)?</h3><p>Iz primjera imate samo redukcije nad jednim brojem. Probajte sa dvije: jedna za dužinu, druga za početak. Koja operacija treba za koju, i šta šalje proces koji nema najduži period?</p></div>
+      <div class="insight"><h3>Granice blokova</h3><p>Testirajte period koji prelazi više blokova (test niz sa 8 procesa) i dva jednako duga perioda u različitim blokovima.</p></div>
+      <div class="insight"><h3>Prazni blokovi</h3><p>Sa više procesa nego podataka neki blok je prazan. Njegov doprinos mora biti neutralan.</p></div>
+      <div class="insight"><h3>Nejednaki blokovi</h3><p><code>n</code> je neparan, a <code>MPI_Scatter</code> šalje svima isti broj elemenata. Pošaljite po ⌊n/p⌋, a ostatak na kraju niza neka obradi root. Kad svaki proces sam generiše, granice <code>r·n/p</code> rade bez posebnog slučaja.</p></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  const TEST = [50,12,15,21,30,31,44,40,38,-10,-4,0,3,9,17,26,20,22,25,27,33,36,41];
+  const PRESETS = {
+    test: TEST,
+    primjer: [5,3,4,8,9,2,7],
+    granica: [210,205,198,201,204,209,213,218,222,227,231,236,229,224,226,219,215,220],
+    nerijeseno: [300,210,215,220,226,190,180,185,191,198,170,175,160]
+  };
+  const SOL = [
+    { id: 'A', tag: 'Scatter + Gather', name: 'Root dijeli podatke',
+      idea: 'Root generiše sva mjerenja i podijeli ih procesima. Svaki proces opiše svoj blok kratkim sažetkom (vidi „Šta je sažetak bloka?“), a root sažetke skupi i spoji.',
+      steps: ['Root generiše svih n mjerenja.', 'MPI_Scatter šalje svakom procesu po k = ⌊n/p⌋ mjerenja. Zadnjih n mod p mjerenja root obradi sam kao dodatni blok.', 'Svaki proces pravi sažetak bloka: prva i zadnja vrijednost, rastući prefiks i sufiks, najbolji period.', 'MPI_Gather sažetaka, root ih spaja redom slijeva nadesno.'],
+      uses: ['scatter.cc', 'gather.cc'],
+      plus: ['Direktno prati primjere sa vježbi', 'Lako se objasni'],
+      minus: ['Generisanje na rootu ostaje serijsko', 'Ostatak n mod p traži poseban blok na rootu', 'Šalje se cijeli niz (≈ 200 MB)', 'Ubrzanje je malo ili ga nema'],
+      verdict: 'Dobar prvi korak, ali ne ubrzava program.',
+      work: 1, comm: 3, mem: 3 },
+    { id: 'B', tag: 'lokalno + Gather', name: 'Svako generiše svoje',
+      idea: 'Isti sažeci kao u A, ali svaki proces sam poziva mjerenje(i) za svoj blok. Šalju se samo sažeci.',
+      steps: ['Proces r računa svoje granice [r·n/p, (r+1)·n/p).', 'Generiše i sažima samo svoj blok.', 'MPI_Gather sažetaka, root spaja.'],
+      uses: ['gather.cc'],
+      plus: ['Skoro linearno ubrzanje', 'Komunikacija je mala i ne zavisi od n'],
+      minus: ['Spajanje sažetaka ima više slučajeva (most preko granice, cijeli blok rastući, prazan blok)', 'Root spaja p sažetaka redom'],
+      verdict: 'Dobro rješenje s jasnim spajanjem.',
+      work: 3, comm: 1, mem: 2 },
+    { id: 'C', tag: 'Allreduce + Reduce', name: 'Period pripada svom početku', rec: true,
+      idea: 'Svaki period „pripada“ procesu u čijem bloku počinje. Proces preskoči nastavak tuđeg perioda na početku bloka, a svoj zadnji period završi čitajući malo preko svoje granice. Na kraju se samo traži najbolji par (dužina, početak).',
+      steps: ['Provjeri da li je prvi element nastavak perioda od prije (uporedi sa i−1).', 'Ako jeste, preskoči dok niz raste.', 'Obradi periode koji počinju u bloku, zadnji smije preći granicu.', 'MPI_Allreduce sa MPI_MAX: svi saznaju najveću dužinu L.', 'Proces čiji najbolji ima dužinu L šalje svoj početak, ostali INT_MAX. MPI_Reduce sa MPI_MIN daje najmanji početak.'],
+      uses: ['allreduce.cc', 'reduce.cc'],
+      plus: ['Nema niza, nema sažetaka, nema ručnog spajanja', 'Komunikacija: 2 broja po procesu', 'Pravilo kod jednakih dužina rješava MPI_MIN nad početcima'],
+      minus: ['Radi jer se mjerenje(i) može pozvati za bilo koji i', 'Bez toga bi trebalo slati graničnu vrijednost susjedu (send_recv.cc)'],
+      verdict: 'Najjednostavnije i najbrže, ali treba dobro razumjeti pravilo vlasništva.',
+      work: 3, comm: 1, mem: 1 },
+    { id: 'D', tag: 'Send / Recv', name: 'Lanac od procesa do procesa',
+      idea: 'Svaki proces paralelno napravi sažetak svog bloka kao u B. Zatim sažetak putuje lancem: P0 šalje P1, P1 ga spoji sa svojim i šalje P2, i tako do zadnjeg procesa.',
+      steps: ['Proces r generiše i sažima svoj blok.', 'P(r) čeka MPI_Recv od P(r−1): sažetak svega lijevo od sebe.', 'Spoji ga sa svojim sažetkom i MPI_Send pošalje P(r+1).', 'Zadnji proces ima rezultat i ispiše ga ili ga pošalje P0.'],
+      uses: ['send_recv.cc'],
+      plus: ['Koristi samo Send i Recv', 'Spajanje je uvijek lijevo ⊕ desno, pa je redoslijed prirodno tačan', 'Isti obrazac radi i kad se šalje samo zadnja vrijednost susjedu'],
+      minus: ['p − 1 poruka jedna za drugom, procesi čekaju', 'Rezultat završi na zadnjem procesu, ne na rootu', 'Više koda nego Gather za istu stvar'],
+      verdict: 'Dobro za razumijevanje Send/Recv, ali B i C su jednostavniji.',
+      work: 3, comm: 1, mem: 2 }
+  ];
+  const STRATS = Object.fromEntries(SOL.map(s => [s.id, `${s.id} · ${s.name}`]));
+  const el = id => document.getElementById(id);
+  const state = { arr: TEST.slice(), p: 4, s: 'C' };
+  const rc = r => `var(--r${r % 8})`;
+
+  function serial(a) {
+    let best = 1, bs = 0, cur = 1, cs = 0;
+    for (let i = 1; i < a.length; i++) {
+      if (a[i] > a[i-1]) cur++; else { cur = 1; cs = i; }
+      if (cur > best) { best = cur; bs = cs; }
+    }
+    return { len: best, start: bs };
+  }
+  function blocks(n, p, scatter) {
+    const b = [];
+    if (scatter) {
+      const k = Math.floor(n / p);
+      for (let r = 0; r < p; r++) b.push({ lo: r*k, hi: (r+1)*k, rank: r });
+      if (p*k < n) b.push({ lo: p*k, hi: n, rank: 0, extra: true });
+      return b;
+    }
+    for (let r = 0; r < p; r++) b.push({ lo: Math.floor(r*n/p), hi: Math.floor((r+1)*n/p), rank: r });
+    return b;
+  }
+  const bname = b => `P${b.rank}${b.extra ? ' ostatak' : ''}`;
+  function sazmi(a, lo, hi) {
+    const len = hi - lo;
+    const s = { off: lo, len, first: 0, last: 0, pref: 0, suf: 0, best: 0, bs: lo };
+    if (!len) return s;
+    s.first = a[lo]; s.last = a[hi-1]; s.best = 1;
+    let cur = 1, cs = lo;
+    for (let i = lo+1; i < hi; i++) {
+      if (a[i] > a[i-1]) cur++; else { cur = 1; cs = i; }
+      if (cur > s.best) { s.best = cur; s.bs = cs; }
+    }
+    s.suf = cur; s.pref = 1;
+    while (s.pref < len && a[lo+s.pref] > a[lo+s.pref-1]) s.pref++;
+    return s;
+  }
+  function spoji(A, B) {
+    if (!A.len) return { r: B, most: false };
+    if (!B.len) return { r: A, most: false };
+    const most = A.last < B.first;
+    const r = { off: A.off, len: A.len + B.len, first: A.first, last: B.last,
+      pref: (most && A.pref === A.len) ? A.len + B.pref : A.pref,
+      suf: (most && B.suf === B.len) ? B.len + A.suf : B.suf,
+      best: A.best, bs: A.bs };
+    const cand = (l, s) => { if (l > r.best || (l === r.best && s < r.bs)) { r.best = l; r.bs = s; } };
+    if (most) cand(A.suf + B.pref, A.off + A.len - A.suf);
+    cand(B.best, B.bs);
+    return { r, most, cross: most ? A.suf + B.pref : 0 };
+  }
+  function vlasnistvo(a, lo, hi) {
+    const n = a.length; let i = lo;
+    let prev = lo > 0 ? a[lo-1] : Infinity;
+    while (i < hi && a[i] > prev) { prev = a[i]; i++; }
+    const skipped = [lo, i];
+    const runs = []; let best = { len: 0, start: Infinity };
+    while (i < hi) {
+      const s = i; i++;
+      while (i < n && a[i] > a[i-1]) i++;
+      runs.push([s, i]);
+      if (i - s > best.len) best = { len: i - s, start: s };
+    }
+    return { skipped, runs, best, reach: runs.length ? runs[runs.length-1][1] : hi };
+  }
+
+  const svgNS = 'http://www.w3.org/2000/svg';
+  function node(tag, attrs, parent, text) {
+    const e = document.createElementNS(svgNS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  const fmtS = s => s === Infinity ? '—' : s;
+
+  function render() {
+    const a = state.arr, n = a.length, p = state.p;
+    const B = blocks(n, p, state.s === 'A');
+    const ser = serial(a);
+    let res, rows = '', steps = [], p3 = null;
+
+    if (state.s === 'C') {
+      p3 = B.map(b => vlasnistvo(a, b.lo, b.hi));
+      let g = { len: 0, start: Infinity };
+      p3.forEach(o => { if (o.best.len > g.len || (o.best.len === g.len && o.best.start < g.start)) g = o.best; });
+      res = g;
+      rows = '<thead><tr><th>Proces</th><th>Blok [lo, hi)</th><th>Preskočeni rep</th><th>Periodi koje posjeduje</th><th>Čita do</th><th class="num">Šalje (dužina, početak)</th></tr></thead><tbody>' +
+        p3.map((o, r) => `<tr><td><span class="rk"><i class="sw" style="background:${rc(r)}"></i>P${r}</span></td>
+          <td class="mono">[${B[r].lo}, ${B[r].hi})</td>
+          <td class="mono">${o.skipped[1] > o.skipped[0] ? `[${o.skipped[0]}, ${o.skipped[1]})` : '—'}</td>
+          <td class="mono">${o.runs.length ? o.runs.map(x => `${x[0]}:${x[1]-x[0]}`).join('  ') : 'nijedan'}</td>
+          <td class="mono">${o.reach > B[r].hi ? `${o.reach - 1} <span style="color:var(--heat)">(+${o.reach - B[r].hi})</span>` : (B[r].hi > B[r].lo ? B[r].hi - 1 : '—')}</td>
+          <td class="num mono">(${o.best.len}, ${fmtS(o.best.start)})</td></tr>`).join('') + '</tbody>';
+      steps.push(`Periodi su zapisani kao <b>početak:dužina</b>. Crveno (+k) znači da je proces pročitao k mjerenja iz susjednog bloka da završi svoj period.`);
+      steps.push(`<b>MPI_Allreduce(MPI_MAX)</b> nad dužinama ${p3.map(o => o.best.len).join(', ')} → L = <span class="hl">${g.len}</span>`);
+      steps.push(`<b>MPI_Reduce(MPI_MIN)</b> nad početcima ${p3.map(o => o.best.len === g.len ? o.best.start : 'INT_MAX').join(', ')} → <span class="hl">${g.start}</span>  (procesi bez perioda dužine L šalju INT_MAX)`);
+    } else {
+      const S = B.map(b => sazmi(a, b.lo, b.hi));
+      rows = '<thead><tr><th>Proces</th><th>Blok [lo, hi)</th><th class="num">prva</th><th class="num">zadnja</th><th class="num">prefiks</th><th class="num">sufiks</th><th class="num">najbolji (početak)</th></tr></thead><tbody>' +
+        S.map((s, r) => `<tr><td><span class="rk"><i class="sw" style="background:${rc(B[r].rank)}"></i>${bname(B[r])}</span></td>
+          <td class="mono">[${B[r].lo}, ${B[r].hi})</td>
+          ${s.len ? `<td class="num">${s.first}</td><td class="num">${s.last}</td><td class="num">${s.pref}</td><td class="num">${s.suf}</td><td class="num">${s.best} (${s.bs})</td>` : '<td class="num" colspan="5">prazan blok</td>'}</tr>`).join('') + '</tbody>';
+      if (state.s === 'D') {
+        let acc = S[0];
+        if (p === 1) steps.push('Jedan proces: nema slanja.');
+        for (let r = 1; r < p; r++) {
+          const o = spoji(acc, S[r]);
+          steps.push(`<b>P${r-1} → P${r}</b>  MPI_Send/MPI_Recv sažetka [0, ${B[r-1].hi}); P${r} ga spoji sa svojim${o.most ? ` (most ${o.cross})` : ''} → najbolji ${o.r.best}@${o.r.bs}`);
+          acc = o.r;
+        }
+        res = { len: acc.best, start: acc.bs };
+        steps.push(`${p - 1} poruka jedna za drugom. Rezultat je na P${p-1} → <span class="hl">(${res.len}, ${res.start})</span>`);
+      } else {
+        let acc = S[0];
+        if (p === 1) steps.push('Jedan proces: nema spajanja.');
+        for (let r = 1; r < S.length; r++) {
+          const o = spoji(acc, S[r]);
+          const why = !S[r].len ? 'prazan blok, preskače se' :
+            o.most ? `${acc.last} &lt; ${S[r].first} → period prelazi granicu, dužina ${o.cross}` : `${acc.last} ≥ ${S[r].first} → nema mosta`;
+          steps.push(`<b>[0, ${B[r-1].hi}) ⊕ ${bname(B[r])}</b>  ${why}  → najbolji ${o.r.best}@${o.r.bs}`);
+          acc = o.r;
+        }
+        res = { len: acc.best, start: acc.bs };
+        const k = Math.floor(n / p), rest = n - p * k;
+        const vol = state.s === 'A' ? `MPI_Scatter po ${k} mjerenja svakom procesu${rest ? `, ostatak od ${rest} root obradi sam` : ''}; MPI_Gather ${p} sažetaka` : `šalje se samo ${p} sažetaka, podaci ostaju gdje su nastali`;
+        steps.push(`Root spaja slijeva nadesno → <span class="hl">(${res.len}, ${res.start})</span>. Komunikacija: ${vol}.`);
+      }
+    }
+
+    const ok = res.len === ser.len && res.start === ser.start;
+    el('result').innerHTML = `<span class="big">dužina ${res.len}, početak ${res.start}</span>
+      <span class="${ok ? 'ok' : 'bad'}">${ok ? '✓ isto kao serijski' : '✗ razlikuje se od serijskog (' + ser.len + ', ' + ser.start + ')'}</span>
+      <span class="sub">n = ${n}, p = ${p}, period: ${a.slice(ser.start, ser.start + ser.len).join(' &lt; ')}</span>`;
+    el('rankTable').innerHTML = rows;
+    el('steps').innerHTML = steps.map(s => `<div>${s}</div>`).join('');
+    drawSvg(a, B, ser, p3);
+    el('legend').innerHTML = `<span><i class="sw" style="background:var(--heat)"></i>najduži period</span>` +
+      (p3 ? `<span><i class="sw" style="background:var(--muted);opacity:.35"></i>preskočeni rep (pripada lijevom susjedu)</span><span><i class="sw" style="border:2px solid var(--heat);background:transparent"></i>čitanje preko granice</span>` : '') +
+      `<span><i class="sw" style="background:var(--r0)"></i>…<i class="sw" style="background:var(--r${Math.min(p-1,7)})"></i>blokovi procesa</span>`;
+  }
+
+  function drawSvg(a, B, ser, p3) {
+    const svg = el('viz'); svg.innerHTML = '';
+    const n = a.length, cw = n > 40 ? 22 : 34, pad = 8, top = 34, h = 150, W = Math.max(n * cw + pad * 2, 320);
+    const H = top + h + 58;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('width', W); svg.setAttribute('height', H);
+    const mn = Math.min(...a), mx = Math.max(...a), span = (mx - mn) || 1;
+    const y = v => top + h - 8 - ((v - mn) / span) * (h - 24);
+    const owner = i => B.findIndex(b => i >= b.lo && i < b.hi);
+    const defs = node('defs', {}, svg);
+    const pat = node('pattern', { id: 'hatch', width: 6, height: 6, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' }, defs);
+    node('rect', { width: 6, height: 6, fill: 'var(--panel)' }, pat);
+    node('line', { x1: 0, y1: 0, x2: 0, y2: 6, stroke: 'var(--muted)', 'stroke-width': 2.5 }, pat);
+    const skipped = new Set();
+    if (p3) p3.forEach(o => { for (let i = o.skipped[0]; i < o.skipped[1]; i++) skipped.add(i); });
+    for (let i = 0; i < n; i++) {
+      const x = pad + i * cw, r = owner(i);
+      const inBest = i >= ser.start && i < ser.start + ser.len;
+      const by = y(a[i]);
+      node('rect', { x: x + 3, y: by, width: cw - 6, height: top + h - by, rx: 2,
+        fill: inBest ? 'var(--heat)' : (skipped.has(i) ? 'url(#hatch)' : rc(B[r].rank)), opacity: inBest ? 1 : 0.8 }, svg);
+      node('text', { x: x + cw / 2, y: by - 5, 'text-anchor': 'middle', 'font-size': n > 40 ? 8 : 10, fill: 'var(--ink)' }, svg, a[i]);
+      node('text', { x: x + cw / 2, y: top + h + 14, 'text-anchor': 'middle', 'font-size': 9, fill: 'var(--muted)' }, svg, i);
+    }
+    B.forEach((b, r) => {
+      if (b.hi <= b.lo) return;
+      const x0 = pad + b.lo * cw, x1 = pad + b.hi * cw;
+      node('rect', { x: x0 + 1, y: top + h + 26, width: x1 - x0 - 2, height: 20, rx: 3, fill: rc(b.rank) }, svg);
+      node('text', { x: (x0 + x1) / 2, y: top + h + 40, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--panel)', 'font-weight': 600 }, svg, b.extra ? `P${b.rank}+` : `P${b.rank}`);
+      if (b.lo > 0) node('line', { x1: x0, y1: 6, x2: x0, y2: top + h, stroke: 'var(--muted)', 'stroke-dasharray': '3 3', 'stroke-width': 1 }, svg);
+    });
+    node('line', { x1: pad, y1: top + h, x2: pad + n * cw, y2: top + h, stroke: 'var(--line)' }, svg);
+    if (p3) p3.forEach((o, r) => {
+      if (o.reach <= B[r].hi) return;
+      const last = o.runs[o.runs.length - 1];
+      const x0 = pad + last[0] * cw + 2, x1 = pad + o.reach * cw - 2;
+      node('rect', { x: x0, y: 8, width: x1 - x0, height: top + h - 8, rx: 4, fill: 'none', stroke: 'var(--heat)', 'stroke-width': 1.5, 'stroke-dasharray': '5 3' }, svg);
+      node('text', { x: x0 + 4, y: 20, 'font-size': 10, fill: 'var(--heat)' }, svg, `P${r} čita +${o.reach - B[r].hi}`);
+    });
+  }
+
+  function setArr(a) { state.arr = a; el('arr').value = a.join(', '); el('err').hidden = true; render(); }
+  el('arr').addEventListener('input', e => {
+    const nums = e.target.value.split(/[\s,;]+/).filter(Boolean).map(Number);
+    if (!nums.length || nums.some(v => !Number.isInteger(v))) { el('err').textContent = 'Unesite cijele brojeve odvojene zarezom ili razmakom.'; el('err').hidden = false; return; }
+    if (nums.length > 80) { el('err').textContent = 'Simulator prikazuje najviše 80 mjerenja.'; el('err').hidden = false; return; }
+    el('err').hidden = true; state.arr = nums; render();
+  });
+  document.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => {
+    const k = b.dataset.preset;
+    if (k === 'random') {
+      const n = 24 + Math.floor(Math.random() * 16), a = [];
+      let v = 150 + Math.floor(Math.random() * 100);
+      for (let i = 0; i < n; i++) { v += Math.random() < 0.62 ? 1 + Math.floor(Math.random() * 9) : -Math.floor(Math.random() * 40); a.push(v); }
+      setArr(a);
+    } else setArr(PRESETS[k].slice());
+  }));
+  el('p').addEventListener('input', e => { state.p = +e.target.value; el('pval').textContent = state.p; render(); });
+  function setStrat(s) {
+    state.s = s;
+    el('strat').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x.dataset.s === s));
+    el('stratName').textContent = STRATS[s];
+    render();
+  }
+  el('strat').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setStrat(b.dataset.s); });
+  el('arr').value = state.arr.join(', ');
+
+  // pregled pristupa
+  const lvl = (k, bad) => `<span class="lvl${bad ? ' bad' : ''}">${[1,2,3].map(i => `<i class="${i <= k ? 'on' : ''}"></i>`).join('')}</span>`;
+  el('cmp').innerHTML = `<thead><tr><th>Pristup</th><th>Ko generiše mjerenja</th><th>Šta se šalje</th><th>Paralelni rad</th><th>Komunikacija</th><th>Memorija</th><th>Spajanje</th></tr></thead><tbody>` +
+    [['A', 'root', 'cijeli niz + p sažetaka', 'root, O(p)'], ['B', 'svaki proces', 'p sažetaka', 'root, O(p)'], ['C', 'svaki proces', 'p dužina + p početaka', 'Allreduce(MAX) + Reduce(MIN), O(log p)'], ['D', 'svaki proces', 'sažetak od procesa do procesa', 'lanac Send/Recv, O(p)']]
+    .map(([id, gen, send, merge]) => { const s = SOL.find(x => x.id === id);
+      return `<tr class="${s.rec ? 'best' : ''}"><td><b>${id}</b> ${s.name}</td><td>${gen}</td><td>${send}</td><td>${lvl(s.work)}</td><td>${lvl(s.comm, true)}</td><td>${lvl(s.mem, true)}</td><td>${merge}</td></tr>`; }).join('') +
+    `</tbody>`;
+  el('cards').innerHTML = SOL.map(s => `<div class="card${s.rec ? ' rec' : ''}">
+      <div class="card-head"><h3>${s.id} · ${s.name}</h3>${s.rec ? '<span class="badge">preporuka</span>' : `<span class="id">${s.tag}</span>`}</div>
+      <p>${s.idea}</p>
+      <ol>${s.steps.map(x => `<li>${x}</li>`).join('')}</ol>
+      <div class="meta">${s.uses.map(u => `<code>${u}</code>`).join('')}</div>
+      <div class="pc"><div class="plus"><h4>Prednosti</h4><ul>${s.plus.map(x => `<li>${x}</li>`).join('')}</ul></div>
+      <div class="minus"><h4>Mane</h4><ul>${s.minus.map(x => `<li>${x}</li>`).join('')}</ul></div></div>
+      <div class="verdict">${s.verdict}</div>
+      <div><button class="chip-btn" data-show="${s.id}">Prikaži ${s.id} u simulatoru ↑</button></div>
+    </div>`).join('');
+  el('cards').addEventListener('click', e => {
+    const b = e.target.closest('[data-show]'); if (!b) return;
+    setStrat(b.dataset.show); el('sim').scrollIntoView({ behavior: 'smooth' });
+  });
+  setStrat('C');
+
+  // ---------- primjer korak po korak ----------
+  const EX = [
+    { k: 'zad', name: 'Primjer iz zadatka', a: [5,3,4,8,9,2,7], note: 'Period 3, 4, 8, 9 staje na indeksu 5 jer 2 ≤ 9. Zadnji period 2, 7 ima dužinu 2 i ne mijenja rekord.' },
+    { k: 'eq', name: 'Jednake vrijednosti', a: [210,215,215,220,225], note: '215 → 215 nije rast. Sa uslovom >= dobili biste dužinu 5 umjesto 3.' },
+    { k: 'tie', name: 'Dva jednako duga', a: [40,60,80,10,30,50], note: 'Oba perioda imaju dužinu 3. Na indeksu 5 trenutni period je jednako dug kao rekord, pa se ne bilježi i ostaje početak 0.' },
+    { k: 'end', name: 'Rekord na kraju', a: [90,10,20,30,40], note: 'Najduži period traje do zadnjeg elementa i nikad ne „stane“. Zato se rekord provjerava u svakom koraku.' },
+    { k: 'down', name: 'Samo opada', a: [50,40,30,20], note: 'Svaki element je period dužine 1. Prvi je na indeksu 0, pa je rezultat (1, 0).' },
+    { k: 'one', name: 'Jedan element', a: [215], note: 'Nema poređenja. Jedno mjerenje je period dužine 1 na indeksu 0.' },
+    { k: 'neg', name: 'Negativne vrijednosti', a: [12,-10,-4,0,3,-20], note: '-1,0 °C < -0,4 °C < 0 < 0,3 °C je normalan rast dužine 4 od indeksa 1.' }
+  ];
+  let exK = 'zad';
+  function renderEx() {
+    const ex = EX.find(e => e.k === exK), a = ex.a;
+    el('exChips').innerHTML = EX.map(e => `<button class="chip-btn" data-ex="${e.k}" aria-pressed="${e.k === exK}">${e.name}</button>`).join('');
+    let cur = 1, cs = 0, best = 1, bs = 0, rows = [];
+    rows.push({ i: 0, x: a[0], cmp: '—', cur, cs, best, bs, rec: true, brk: false, ev: '<span class="tag-rec">bilježi</span> prvi element je period dužine 1' });
+    for (let i = 1; i < a.length; i++) {
+      const up = a[i] > a[i-1];
+      let ev;
+      if (up) { cur++; ev = `raste, period od ${cs} sada ima dužinu ${cur}`; }
+      else { ev = `<span class="tag-brk">staje</span> period [${cs}..${i-1}] dužine ${cur}; novi počinje u ${i}`; cur = 1; cs = i; }
+      let rec = false;
+      if (cur > best) { best = cur; bs = cs; rec = true; ev += `; <span class="tag-rec">bilježi</span> novi rekord ${best} od ${bs}`; }
+      else if (up && cur === best) ev += `; jednako dug kao rekord, <b>ne bilježi</b>`;
+      rows.push({ i, x: a[i], cmp: `${a[i]} ${up ? '&gt;' : (a[i] === a[i-1] ? '=' : '&lt;')} ${a[i-1]}`, cur, cs, best, bs, rec, brk: !up, ev });
+    }
+    if (a.length > 1) rows.push({ end: true, ev: `kraj niza: zadnji period [${cs}..${a.length-1}] dužine ${cur} se završava bez prekida` });
+    el('trace').innerHTML = '<thead><tr><th class="num">i</th><th class="num">x</th><th>poređenje</th><th class="num">trenutni</th><th class="num">najbolji</th><th>šta se desi</th></tr></thead><tbody>' +
+      rows.map(r => r.end ? `<tr><td colspan="5"></td><td class="ev">${r.ev}</td></tr>` :
+        `<tr class="${r.rec ? 'rec' : ''} ${r.brk ? 'brk' : ''}"><td class="num">${r.i}</td><td class="num">${r.x}</td><td class="mono">${r.cmp}</td><td class="num">${r.cur} od ${r.cs}</td><td class="num">${r.best} od ${r.bs}</td><td class="ev">${r.ev}</td></tr>`).join('') + '</tbody>';
+    el('exSeq').innerHTML = a.map((v, i) => `<span class="${i >= bs && i < bs + best ? 'in-best' : ''}">${v}<small>${i}</small></span>`).join('');
+    el('exResult').innerHTML = `<span class="big">dužina ${best}, početak ${bs}</span>`;
+    el('exNote').textContent = ex.note;
+  }
+  el('exChips').addEventListener('click', e => { const b = e.target.closest('[data-ex]'); if (b) { exK = b.dataset.ex; renderEx(); } });
+  renderEx();
+})();
+</script>
+
+</body></html>
