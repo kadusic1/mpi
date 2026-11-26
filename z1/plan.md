@@ -46,7 +46,7 @@ Ovdje je sav zajednički kod, da serial i parallel ništa ne dupliraju.
 
 | Element | Opis |
 |---|---|
-| `SEED` | `constexpr int`, zadnje 4 cifre indeksa (**TODO: upisati**) |
+| `SEED` | `constexpr int`, zadnje 4 cifre indeksa 0134 → `134` (bez vodeće nule, inače oktalno) |
 | `TEST[23]` | test niz |
 | `struct Data` | `test`, `n`, `seed`; konstruktor `Data(argc, argv)` čita argument `test`; `int operator[](long long i) const` vraća `TEST[i]` ili `mjerenje(i, n, seed)` |
 | `struct Block` | `lo`, `hi`; `static Block of(rank, size, n)` → `[rank·n/size, (rank+1)·n/size)` |
@@ -121,5 +121,5 @@ Podaci se ne šalju. Šalju se samo 2 broja po procesu.
 
 1. `common.h` / `common.cc` + `serial.cc`, pa provjera `./serial test` (7 / 9)
 2. `parallel.cc`, pa `make test` za 1–8 procesa
-3. Upisati pravi `SEED`, pa uporediti serial i parallel na pravim podacima
+3. `SEED = 134` (indeks 0134), pa uporediti serial i parallel na pravim podacima
 4. `make bench`, zapisati rezultate

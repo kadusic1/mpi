@@ -2,8 +2,9 @@
 
 #include <climits>
 
-// Zadnje 4 cifre broja indeksa. TODO: upisati svoje.
-constexpr int SEED = 1234;
+// Zadnje 4 cifre broja indeksa: 0134. Piše se bez vodeće nule,
+// jer bi 0134 u C++ bio oktalni broj (= 92).
+constexpr int SEED = 134;
 
 // Izvor mjerenja: TEST niz (argument "test") ili mjerenje(i, n, seed).
 struct Data {

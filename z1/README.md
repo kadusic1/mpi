@@ -29,12 +29,12 @@ $ ./build/serial test
 duzina = 7, pocetak = 9
 vrijeme = 3.93e-07 s
 
-$ mpirun -n 4 ./build/parallel        # SEED = 1234
-duzina = 45, pocetak = 25000013
-vrijeme = 0.157704 s
+$ mpirun -n 4 ./build/parallel        # SEED = 134 (indeks 0134)
+duzina = 37, pocetak = 24999986
+vrijeme = 0.160435 s
 ```
 
-> `SEED` u `inc/common.h` je još `1234`. Treba upisati zadnje 4 cifre broja indeksa.
+> `SEED` u `inc/common.h` je `134`: zadnje 4 cifre indeksa **0134**. Vodeća nula se ne piše, jer bi `0134` u C++ bio oktalni broj (92).
 
 ## Struktura
 
@@ -81,8 +81,8 @@ Ovdje postoje dva perioda dužine 7, na početku 9 i na početku 16. Pobjeđuje 
 `mix` je `static inline`, pa se ne vidi izvan `blackbox.cc`. `mjerenje` je **čista funkcija**: za isti `(i, n, seed)` uvijek vraća isti broj. Zbog toga svaki proces može sam izračunati bilo koje mjerenje, pa podatke ne treba slati.
 
 ```cpp
-long long n = broj_mjerenja(1234);   // 50000073
-int x = mjerenje(0, n, 1234);        // isto na svakom procesu, svaki put
+long long n = broj_mjerenja(134);    // 50000013
+int x = mjerenje(0, n, 134);         // isto na svakom procesu, svaki put
 ```
 
 ---
@@ -114,8 +114,8 @@ d[9];                 // -10
 d[22];                // 41
 
 // ./serial
-Data d(argc, argv);   // test = false, n = 50000073 (seed 1234)
-d[i];                 // == mjerenje(i, 50000073, 1234)
+Data d(argc, argv);   // test = false, n = 50000013 (seed 134)
+d[i];                 // == mjerenje(i, 50000013, 134)
 ```
 
 Niz se **ne čuva** u memoriji. `operator[]` računa vrijednost na zahtjev, pa program koristi O(1) memorije.
